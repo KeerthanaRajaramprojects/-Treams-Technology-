@@ -1,0 +1,19 @@
+CREATE VIEW product_sales AS
+SELECT p.product_id, p.product_name, SUM(od.quantity) AS total_quantity_sold, SUM(od.total_price) AS total_sales
+FROM products p
+JOIN order_details od ON p.product_id = od.product_id
+GROUP BY p.product_id, p.product_name;
+
+
+CREATE TRIGGER UpdateStockOnOrderPlacement
+ON order_details
+AFTER INSERT
+AS
+BEGIN
+    UPDATE products
+    SET stock_quantity = stock_quantity - ordet.quantity
+    FROM products pro
+    JOIN inserted AS ordet ON pro.product_id = ordet.product_id
+END;
+
+Select * FROM product_sales
